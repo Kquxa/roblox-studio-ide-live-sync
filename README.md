@@ -68,7 +68,7 @@ This currently supports:
 - IDE changes must be saved to disk before Studio can see them
 - Enabling Auto Save in VS Code is recommended
 - This project syncs script source, not every Roblox instance type
-- For teamwork, use this together with GitHub or another Git host
+- I'll soon update the project so its compatibile with Github and other Git host's
 
 ## Troubleshooting
 
@@ -88,6 +88,6 @@ This currently supports:
 
 The plugin uses `ScriptEditorService` for better live updates, but if Studio behaves oddly, reopen the tab once and test again.
 
-## License
+## Support
 
-Add your preferred license before publishing if you want other people to reuse this project more easily.
+if you have any troubles or questions open an Issue on this repository and ill 100% respond. 
