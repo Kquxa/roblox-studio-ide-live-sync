@@ -1,18 +1,93 @@
-roblox studio ide live sync is a lightweight bridge between Roblox Studio and your local IDE that keeps Luau scripts synced both ways in real time. Instead of manually exporting from Studio every time you change a script, this tool automatically sends Studio edits to your project folder and pulls file changes from your IDE back into Studio.
+# Roblox Live Sync
 
-The project includes a Python server and a Roblox Studio plugin. The Python server watches your local script folder, handles incoming updates from Studio, and exposes change events for the plugin. The plugin monitors Script, LocalScript, and ModuleScript instances inside Studio, pushes edits to disk, and imports file updates back into open Studio scripts. It also uses Roblox’s script editor APIs so changes from your IDE appear properly in Studio without needing to reopen the script tab.
+Keep Roblox Studio and your local IDE folder synced both ways in real time.
 
-This makes it much easier to work with Roblox code using normal development tools like VS Code, Codex, Git, and GitHub. It is especially useful for solo developers or small teams who want a smoother workflow between Studio and a real code editor, without relying on constant manual exporting and importing.
+This project uses:
 
-Current features include:
+- a Python server to watch your local `.luau` files
+- a Roblox Studio plugin to sync script changes between Studio and disk
 
-automatic Studio -> folder sync
-automatic folder -> Studio sync
-local HTTP bridge server
-change polling/event feed for live updates
-fallback manual export/import buttons
-basic loop prevention to avoid sync bouncing
-optional filesystem event support through Python watchdog
-The goal of the project is to make Roblox scripting feel closer to a normal software workflow: edit in Studio or edit in your IDE, and your code stays connected. It is designed as a local-first solution that can later be paired with GitHub for collaboration and version control.
+If you edit a script in Roblox Studio, it updates your local project files automatically.  
+If you edit a synced file in your IDE and save it, the change is pushed back into Studio automatically.
 
-This project currently focuses on script source synchronization which allows to use codex or other AI plugins for ur roblox studio projects. 
+## Requirements
+
+- Windows
+- Python 3.10 or newer
+- Roblox Studio with plugin access enabled
+- HTTP requests enabled in Studio
+
+Optional:
+
+- `watchdog` Python package for event-based file watching instead of polling
+
+## Initial Setup
+
+1. Download or clone this repository.
+2. Open a terminal in the project folder.
+3. Start the Python server:
+
+```powershell
+python export_server.py
+```
+
+4. Copy the contents of `roblox_exporter.plugin.lua` into a Roblox Studio plugin.
+5. Make sure the Python server is running before using the plugin.
+
+## Optional Installation
+
+To enable more efficient filesystem watching:
+
+```powershell
+pip install watchdog
+```
+
+Without `watchdog`, the server still works by falling back to a 1 second polling loop.
+
+## Project Structure
+
+- `export_server.py` - Local sync server and file watcher
+- `roblox_exporter.plugin.lua` - Roblox Studio plugin for live sync
+- `MyGame/src/` - Synced Luau files written by the server
+
+## How It Works
+
+- Studio changes are sent to the Python server
+- The server writes those changes to `MyGame/src`
+- Local file changes are detected by the server
+- The Studio plugin polls for those file changes and updates scripts inside Studio
+
+This currently supports:
+
+- `Script`
+- `LocalScript`
+- `ModuleScript`
+
+## Notes
+
+- IDE changes must be saved to disk before Studio can see them
+- Enabling Auto Save in VS Code is recommended
+- This project syncs script source, not every Roblox instance type
+- For teamwork, use this together with GitHub or another Git host
+
+## Troubleshooting
+
+### Studio changes do not appear in the folder
+
+- Make sure `export_server.py` is running
+- Make sure Studio HTTP requests are enabled
+- Make sure the plugin is loaded correctly
+
+### IDE changes do not appear in Studio
+
+- Make sure the file was actually saved
+- Try enabling Auto Save in your editor
+- Make sure the changed file is inside `MyGame/src`
+
+### Open Studio script tabs do not refresh correctly
+
+The plugin uses `ScriptEditorService` for better live updates, but if Studio behaves oddly, reopen the tab once and test again.
+
+## License
+
+Add your preferred license before publishing if you want other people to reuse this project more easily.
